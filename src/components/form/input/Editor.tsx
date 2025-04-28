@@ -1,111 +1,133 @@
-import React, { forwardRef, useImperativeHandle, useRef, ForwardRefRenderFunction } from "react";
-import { Editor as TinyEditor, IAllProps } from "@tinymce/tinymce-react";
-import { config } from "@/constants/config";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-export interface EditorRef {
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { Editor as TinyEditor } from "@tinymce/tinymce-react";
+import { TINY_API_KEY } from "../../../shared/constants/common";
+
+export interface EditorProps {
+  onChange: (content: string, editor: any) => void;
+  [key: string]: any;
+}
+
+interface EditorRef {
   getContent: () => string | undefined;
 }
 
-interface EditorInstance {
+interface TinyMCEInstance {
   getContent: () => string;
 }
 
-export interface EditorProps extends Omit<IAllProps, "onEditorChange"> {
-  onChange?: (content: string) => void;
-}
+const Editor = forwardRef<EditorRef, EditorProps>(
+  ({ onChange, ...props }, ref) => {
+    const editorRef = useRef<TinyMCEInstance | null>(null);
 
-const Editor: ForwardRefRenderFunction<EditorRef, EditorProps> = ({ onChange, ...props }, ref) => {
-  const editorRef = useRef<EditorInstance | null>(null);
+    // const [, uploadImageApi] = useAxios(
+    //   {
+    //     method: 'post',
+    //     url: API_ROUTES.UploadImage,
+    //   },
+    //   {
+    //     manual: true,
+    //   }
+    // );
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      getContent: () => {
-        if (editorRef.current) {
-          return editorRef.current.getContent();
-        }
-        return undefined;
-      },
-    }),
-    [editorRef]
-  );
+    useImperativeHandle(
+      ref,
+      () => ({
+        getContent: () => {
+          if (editorRef.current) {
+            return editorRef.current.getContent();
+          }
+          return undefined;
+        },
+      }),
+      [editorRef]
+    );
 
-  return (
-    <>
-      <TinyEditor
-        apiKey={config.env.tinyApiKey}
-        onInit={(evt, editor) => (editorRef.current = editor as unknown as EditorInstance)}
-        init={{
-          height: 350,
-          menubar: false,
-          plugins: [
-            "advlist",
-            "autolink",
-            "lists",
-            "link",
-            "image",
-            "charmap",
-            "preview",
-            "anchor",
-            "searchreplace",
-            "visualblocks",
-            "code",
-            "fullscreen",
-            "insertdatetime",
-            "media",
-            "table",
-            "code",
-            "help",
-            "wordcount",
-          ],
-          toolbar:
-            "undo redo | blocks fontfamily fontsize | " +
-            "bold italic forecolor | alignleft aligncenter " +
-            "alignright alignjustify | bullist numlist outdent indent | " +
-            "removeformat | help",
-          content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-          language: "en",
-          elementpath: false,
-          branding: false,
-          //   file_picker_callback: (cb, value, meta) => {
-          //     const input = document.createElement("input");
-          //     input.setAttribute("type", "file");
-          //     input.setAttribute("accept", "image/*");
+    return (
+      <>
+        <TinyEditor
+          apiKey={TINY_API_KEY}
+          onInit={(evt, editor) => {
+            console.log("🚀 ~ evt:", evt);
+            // Now TypeScript knows this is a TinyMCEEditor instance
+            editorRef.current = editor;
+          }}
+          init={{
+            height: 350,
+            plugins: [
+              "advlist",
+              "autolink",
+              "lists",
+              "link",
+              "image",
+              "charmap",
+              "preview",
+              "anchor",
+              "searchreplace",
+              "visualblocks",
+              "code",
+              "fullscreen",
+              "insertdatetime",
+              "media",
+              "table",
+              "code",
+              "help",
+              "wordcount",
+            ],
+            toolbar:
+              "undo redo | blocks fontfamily fontsize | " +
+              "bold italic forecolor | alignleft aligncenter " +
+              "alignright alignjustify | bullist numlist outdent indent | " +
+              "removeformat | help",
+            menubar: "file edit insert view format",
+            content_style:
+              "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            language: "vi",
+            elementpath: false,
+            branding: false,
+            file_picker_callback: () => {
+              //cb: (url: string, meta?: { [key: string]: any }) => void
+              const input = document.createElement("input");
+              input.setAttribute("type", "file");
+              input.setAttribute("accept", "image/*");
 
-          //     input.addEventListener("change", async (e) => {
-          //       const file = e.target.files[0];
-          //       const data = new FormData();
+              input.addEventListener("change", (e: Event) => {
+                const target = e.target as HTMLInputElement;
+                const file = target.files?.[0];
 
-          //       data.append("imageFile", file);
+                if (!file) return;
 
-          //       if (data) {
-          //         await uploadThumbnailSystem(data)
-          //           .then((res) => {
-          //             const imageUrl = res?.data?.imageUrl;
-          //             const fullImageUrl = `${ROOT_API}${imageUrl}`;
-          //             cb(fullImageUrl, { title: file.name });
-          //           })
-          //           .catch((error) => {
-          //             toast({
-          //               title:
-          //                 error?.response?.data?.errors?.[0]?.msg ||
-          //                 error?.response?.data?.msg ||
-          //                 `Tải file không thành công`,
-          //               status: "error",
-          //               duration: 9000,
-          //               isClosable: true,
-          //             });
-          //           });
-          //       }
-          //     });
-          //     input.click();
-          //   },
-        }}
-        onEditorChange={onChange}
-        {...props}
-      />
-    </>
-  );
-};
+                const data = new FormData();
+                data.append("image", file);
 
-export default forwardRef(Editor);
+                //   uploadImageApi({ data })
+                //     .then((res) => {
+                //       cb(res?.data?.data?.imageUrl, { title: file.name });
+                //     })
+                //     .catch((error) => {
+                //       toast({
+                //         title:
+                //           error?.response?.data?.errors?.[0]?.msg ||
+                //           error?.response?.data?.msg ||
+                //           `Tải file không thành công`,
+                //         status: "error",
+                //         duration: 9000,
+                //         isClosable: true,
+                //       });
+                //     });
+              });
+
+              input.click();
+            },
+          }}
+          onEditorChange={onChange}
+          {...props}
+        />
+      </>
+    );
+  }
+);
+
+export default Editor;

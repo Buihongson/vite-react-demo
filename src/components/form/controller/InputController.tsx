@@ -7,7 +7,10 @@ import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import Input from "../input/InputField";
 
 interface IProps<TFieldValues extends FieldValues>
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "defaultValue" | "min" | "max" | "step"> {
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "defaultValue" | "min" | "max" | "step"
+  > {
   name: Path<TFieldValues>;
   control: Control<any>;
   label?: string;
@@ -16,6 +19,7 @@ interface IProps<TFieldValues extends FieldValues>
   suffix?: string;
   containerClassName?: string;
   success?: boolean;
+  hint?: string;
 }
 
 const InputController = <TFieldValues extends Record<string, unknown>>({
@@ -27,6 +31,7 @@ const InputController = <TFieldValues extends Record<string, unknown>>({
   required,
   containerClassName,
   success,
+  hint,
   ...rest
 }: IProps<TFieldValues>) => (
   <Controller
@@ -37,15 +42,24 @@ const InputController = <TFieldValues extends Record<string, unknown>>({
         <label
           htmlFor={name}
           className={classNames(
-            "form-label text-neutral-700 dark:text-neutral-100 text-sm",
+            "form-label text-neutral-700 dark:text-neutral-100",
             labelClassName
           )}
         >
           {label}
           {required && <sup className="text-red-600 ml-1">*</sup>}
         </label>
-        <Input id={name} type={type} error={!!fieldError} success={success} {...field} {...rest} />
-        {fieldError && <div className="text-xs text-red-600 mt-2">{fieldError.message}</div>}
+        <Input
+          id={name}
+          type={type}
+          error={!!fieldError}
+          success={success}
+          hint={fieldError ? fieldError.message : hint}
+          placeholder={rest.placeholder || `Enter the ${label}`}
+          {...field}
+          {...rest}
+        />
+        {/* {fieldError && <div className="text-xs text-red-600 mt-2">{fieldError.message}</div>} */}
       </div>
     )}
   />

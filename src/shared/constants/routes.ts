@@ -1,0 +1,16 @@
+export const PATH_NAME = {
+  Home: "/",
+  Login: "/login",
+  Profile: "/profile",
+  Product: "/product",
+  Seller: "/seller",
+  CreateProduct: "/product/create",
+  ProductType: "/product-type",
+  Category: "/category",
+  Bank: "/bank",
+  BankAccount: "/bank-account",
+  UpdateBankAccount: "/bank-account/create/:id",
+  CreateBankAccount: "/bank-account/create",
+  Admin: "/admin",
+  Transaction: "/transaction",
+};

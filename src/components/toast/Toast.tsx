@@ -1,16 +1,15 @@
 import classNames from "classnames";
-import { FaRegCircleCheck, FaCircleInfo } from "react-icons/fa6";
 
-const getIconName = (type: string) => {
-  switch (type) {
-    case "success":
-      return FaRegCircleCheck;
-    case "error":
-      return FaCircleInfo;
-    default:
-      return FaRegCircleCheck;
-  }
-};
+// const getIconName = type => {
+//   switch (type) {
+//     case 'success':
+//       return 'CheckCircle2';
+//     case 'error':
+//       return 'XCircle';
+//     default:
+//       return 'CheckCircle2';
+//   }
+// };
 
 // const getIconClassName = (type: string) => {
 //   switch (type) {
@@ -40,16 +39,16 @@ type Props = {
 };
 
 const Toast = ({ type, message }: Props) => {
-  const Icon = getIconName(type);
+  //   const iconName = getIconName(type);
   //   const iconClassName = getIconClassName(type);
   const typeClassName = getTittleClassName(type);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col gap-3">
       <span className={classNames("capitalize font-bold", typeClassName)}>
-        <Icon />
+        {type}
       </span>
-      <span className="w-full toast-content-component text-sm text-neutral-700 dark:text-neutral-100">
+      <span className="w-full toast-content-component text-sm text-neutrals-3">
         {message}
       </span>
     </div>

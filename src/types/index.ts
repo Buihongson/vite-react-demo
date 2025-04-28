@@ -1,4 +1,5 @@
+export * from "./IRoutes";
 export * from "./ICommon";
-export * from "./IProduct";
-export * from "./IFinance";
+export * from "./ICategory";
 export * from "./IUser";
+export * from "./IProduct";
